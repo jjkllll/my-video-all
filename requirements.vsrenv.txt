@@ -1,0 +1,38 @@
+# =============================================================================
+# .vsrenv —— Python 3.12 隔离环境依赖
+#
+# 覆盖以下脚本：
+#   python/remove_watermark.py   去水印 / 去字幕（VSR sttn-auto，源码在 vendor/vsr/）
+#   python/tts.py                文本转语音（sherpa-onnx Supertonic 3，CUDA 版）
+#
+# 安装：
+#   conda create -p .vsrenv python=3.12 -y
+#   .vsrenv/bin/python -m pip install -r requirements.vsrenv.txt
+#
+# 说明：
+#   - torch / torchvision 使用 CUDA 12.6 版本（兼容 Pascal 及更新的 NVIDIA GPU，
+#     来自 PyTorch cu126 索引；纯 CPU 机器可改用 CPU 索引的对应版本）。
+#   - sherpa-onnx 使用 CUDA 12 + cuDNN 9 版（非 PyPI 默认的 CPU 版），
+#     通过 k2-fsa 官方 wheel 索引安装。
+#   - sherpa-onnx 的 CUDA 运行库由 .vsrenv 内的 nvidia-*-cu12 轮子 + 项目根目录
+#     .tts_cuda/lib/libcudart.so.12 提供，脚本运行时会自行加载，无需系统级 CUDA。
+#   - 去水印（VSR）源码已被 .gitignore 忽略，需另行获取 vendor/vsr（含 sttn-auto 模型）。
+# =============================================================================
+
+# torch（cu126）/ sherpa-onnx CUDA 轮子来自官方独立索引
+--extra-index-url https://download.pytorch.org/whl/cu126
+-f https://k2-fsa.github.io/sherpa/onnx/cuda.html
+
+# --- 去水印（VSR sttn-auto）---
+torch==2.9.1+cu126
+torchvision==0.24.1+cu126
+numpy==2.5.3
+opencv-python-headless==5.0.0.93
+pillow==12.3.0
+matplotlib==3.11.2
+tqdm==4.70.1
+einops==0.8.2
+filesplit==3.0.2
+
+# --- 文本转语音（Supertonic 3）---
+sherpa-onnx==1.13.8+cuda12.cudnn9.onnxruntime1.28.2

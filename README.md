@@ -13,19 +13,38 @@
 
 ## 快速开始
 
+### 环境依赖
+
+- **JS / TS 依赖**：全部声明在 [package.json](package.json)，`npm i` 即可。
+- **Node.js**：建议 v22+。
+- **Python 隔离环境**（AI 音视频处理，按需启用）：两个环境彼此独立，均不污染系统 Python。
+  - [requirements.faceenv.txt](requirements.faceenv.txt) → `.faceenv`（Python 3.11）：人脸检测、语音转字幕、去人声、字幕检测。
+  - [requirements.vsrenv.txt](requirements.vsrenv.txt) → `.vsrenv`（Python 3.12）：去水印（VSR sttn-auto）、文本转语音（sherpa-onnx）。
+- **ffmpeg / ffprobe**：优先使用系统命令，缺失时自动回退到 Remotion 自带二进制。
+
 ```bash
-# 安装依赖
+# 1) 安装 JS 依赖
 npm i
 
-# 启动 Remotion Studio（开发预览）
+# 2) 安装 Python 环境（按需使用对应功能时）
+conda create -p .faceenv python=3.11 -y
+.faceenv/bin/python -m pip install -r requirements.faceenv.txt
+.faceenv/bin/python -m pip install --no-deps insightface==2.1
+
+conda create -p .vsrenv python=3.12 -y
+.vsrenv/bin/python -m pip install -r requirements.vsrenv.txt
+
+# 3) 启动 Remotion Studio（开发预览）
 npm run dev
 
-# 启动渲染 API 服务
+# 4) 启动渲染 API 服务
 npm run server
 
-# TypeScript 检查
+# 5) TypeScript 检查
 npm run lint
 ```
+
+> Python 环境路径可通过 `FACE_PYTHON` / `WHISPER_PYTHON` / `DEMUCS_PYTHON` / `WM_PYTHON` / `TTS_PYTHON` 等环境变量覆盖，详见下文各 API 说明。
 
 ---
 

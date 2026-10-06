@@ -1,0 +1,53 @@
+# =============================================================================
+# .faceenv —— Python 3.11 隔离环境依赖
+#
+# 覆盖以下脚本：
+#   python/face_detect.py        人脸时间段检测（InsightFace + onnxruntime）
+#   python/transcribe.py         语音转字幕（faster-whisper）
+#   python/remove_vocals.py      去人声（Demucs）
+#   python/detect_subtitles.py   字幕区域检测（OpenCV 启发式）
+#   python/text_detect.py        字幕文本检测（ONNX Runtime + PP-OCR）
+#
+# 安装：
+#   conda create -p .faceenv python=3.11 -y
+#   .faceenv/bin/python -m pip install -r requirements.faceenv.txt
+#   # insightface 单独安装，见下方说明
+#   .faceenv/bin/python -m pip install --no-deps insightface==2.1
+#
+# 注意：
+#   - insightface 依赖 onnxruntime / opencv-python，会与下方的 GPU 版
+#     onnxruntime-gpu 及 headless 版 OpenCV 冲突，因此未列入本文件，
+#     需在所有依赖装完后用 --no-deps 单独安装（见上面命令）。
+#   - 无需 GPU 时，把 onnxruntime-gpu 换成 onnxruntime==1.20.2 即可。
+#   - 首次运行会从 HuggingFace 下载检测 / 识别 / Whisper 模型，
+#     下载位置见 python/.insightface、python/.whisper-models、python/.demucs-models。
+#   - 系统需可用的 C++ 编译工具链（insightface 为源码包，安装时会编译扩展）。
+# =============================================================================
+
+# torch / torchaudio 使用 CPU 版（去人声无需 GPU），来自 PyTorch CPU 索引
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# --- 人脸 / 文本检测 ---
+# insightface==2.1   # 需 --no-deps 单独安装，见文件头说明
+onnx==1.23.1
+onnxruntime-gpu==1.20.2
+opencv-python-headless==5.0.0.93
+scikit-image==0.26.0
+scipy==1.17.1
+numpy==2.4.6
+tqdm==4.70.1
+requests==2.34.2
+
+# --- 语音转字幕 ---
+faster-whisper==1.2.1
+ctranslate2==4.8.2
+av==18.1.0
+huggingface_hub==1.33.0
+
+# --- 去人声 ---
+demucs==4.1.0
+einops==0.8.2
+
+# --- 去人声所需的 CPU 版 PyTorch ---
+torch==2.14.1+cpu
+torchaudio==2.11.0+cpu
