@@ -1,0 +1,17 @@
+[Unit]
+Description=My Video Remotion Render API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=jjk
+WorkingDirectory=/home/jjk/data/my-video
+Environment=PATH=/home/jjk/.nvm/versions/node/v22.23.2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=PORT=3001
+ExecStart=/home/jjk/.nvm/versions/node/v22.23.2/bin/node /home/jjk/data/my-video/node_modules/.bin/tsx src/server.ts
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
