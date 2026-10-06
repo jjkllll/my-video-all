@@ -186,7 +186,7 @@ curl -X POST http://localhost:3001/api/render \
       {"src": "photo2.jpg", "camera": {"effect": "panRight"}},
       {"src": "photo3.jpg", "camera": {"effect": "blurIn"}},
       {"src": "photo4.jpg", "camera": {"effect": "rotate"}}
-    ],shi
+    ],
     "transition": "fade",
     "transitionDuration": 15,
     "durationPerImage": 90
