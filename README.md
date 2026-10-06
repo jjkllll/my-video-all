@@ -1,6 +1,15 @@
 # Remotion Slide Video
 
-基于 [Remotion](https://remotion.dev) v4 的幻灯片视频生成项目。支持通过 Express API 上传图片/音频，服务端渲染输出 MP4 视频。
+基于 [Remotion](https://remotion.dev) v4 的自动化视频生产工具。通过 Express API 上传素材、编排镜头，服务端渲染输出 MP4；并内置一整套 Python 音视频/图像处理能力（人脸检测、语音转字幕、去人声、去水印、TTS），覆盖从素材处理到成片输出的完整流程。
+
+## 功能特性
+
+- **幻灯片视频生成**：图片与视频片段混排，支持淡入淡出转场、Ken Burns 运镜、多音轨混音，成片时长按素材自动计算。
+- **视频编辑**：视频拼接、按时间轴切割、画面裁剪、音视频分离、音频串联与切割。
+- **字幕能力**：文本区域检测（启发式 / 学习型）、语音识别生成字幕（faster-whisper）、音频 + 字幕合成并插入视频。
+- **AI 素材处理（Python）**：人脸时间段检测、去人声（Demucs）、去水印 / 去字幕（VSR sttn-auto，支持遮罩）、文本转语音（sherpa-onnx Supertonic 3）。
+- **文件与图片**：统一的上传 / 列出 / 删除接口，图片压缩（sharp）。
+- **服务端渲染**：基于 `@remotion/renderer`，直接通过 API 输出成片。
 
 ## 快速开始
 
@@ -1502,20 +1511,29 @@ curl -X POST http://localhost:3001/api/video/insert \
 ```
 my-video/
 ├── src/
-│   ├── index.ts           # Remotion 入口
-│   ├── Root.tsx           # 组件定义（SlideVideo）
-│   └── server.ts          # Express API 服务
-├── public/
-│   ├── audio/             # 本地音频文件
-│   ├── uploads/           # 上传的图片/视频
-│   └── video/             # 处理结果（渲染、去水印、去字幕等）
-├── out/                   # Remotion 中间渲染输出
+│   ├── index.ts               # Remotion 入口（注册根组件）
+│   ├── Root.tsx               # 合成定义：SlideVideo / AudioSubtitleVideo
+│   ├── KenBurnsImage.tsx      # 图片 Ken Burns 运镜组件
+│   ├── VideoClip.tsx          # 视频片段组件
+│   ├── AudioSubtitleVideo.tsx # 音频 + 字幕合成组件
+│   └── server.ts              # Express API 服务（渲染与各类处理接口）
+├── python/                    # AI / 媒体处理脚本
+│   ├── face_detect.py         # 人脸时间段检测
+│   ├── transcribe.py          # 语音转字幕（faster-whisper）
+│   ├── remove_vocals.py       # 去人声（Demucs）
+│   ├── text_detect.py         # 文本 / 水印区域检测
+│   ├── detect_subtitles.py    # 字幕检测
+│   ├── remove_watermark.py    # 去水印 / 去字幕（VSR）
+│   └── tts.py                 # 文本转语音（sherpa-onnx）
+├── public/                    # 素材与产物（uploads/、audio/、video/、subtitles/）
+├── out/                       # Remotion 中间渲染输出（已 gitignore）
 ├── package.json
 └── remotion.config.ts
 ```
 
 ## 技术栈
 
-- Remotion v4 + React 19 + TypeScript
-- Express + @remotion/renderer（服务端渲染）
-- Tailwind CSS v4（Studio UI）
+- **前端 / 渲染**：Remotion v4 + React 19 + TypeScript
+- **服务端**：Express 5 + `@remotion/renderer`（服务端渲染）、multer（上传）、sharp（图片处理）
+- **样式**：Tailwind CSS v4
+- **AI / 媒体处理（Python）**：faster-whisper（语音转字幕）、Demucs（去人声）、VSR sttn-auto（去水印）、sherpa-onnx Supertonic 3（TTS）、ONNX Runtime（人脸 / 文本检测）
